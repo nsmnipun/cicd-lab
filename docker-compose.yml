@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: notes
+      POSTGRES_PASSWORD: notes
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notes"]
+      interval: 3s
+      retries: 20
+
+  migrate:
+    build: ./api
+    command: ["migrate"]
+    environment:
+      ConnectionStrings__Notes: Host=db;Database=notes;Username=postgres;Password=notes
+    depends_on:
+      db: { condition: service_healthy }
+
+  api:
+    build: ./api
+    environment:
+      ConnectionStrings__Notes: Host=db;Database=notes;Username=postgres;Password=notes
+    ports: ["5080:8080"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  ui:
+    build: ./ui
+    environment:
+      API_UPSTREAM: http://api:8080
+    ports: ["8081:8080"]
+    depends_on: [api]
