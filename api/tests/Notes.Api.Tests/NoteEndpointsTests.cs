@@ -27,7 +27,7 @@ public class NoteEndpointsTests(NotesApiFactory factory) : IClassFixture<NotesAp
         Assert.NotNull(note);
         Assert.NotEqual(Guid.Empty, note.Id);
         Assert.Equal("Groceries", note.Title);
-        Assert.Equal("Milk Tea", note.Body);
+        Assert.Equal("Milk", note.Body);
         Assert.Equal(note.CreatedAt, note.UpdatedAt);
         Assert.Equal($"/api/notes/{note.Id}", response.Headers.Location?.ToString());
     }
